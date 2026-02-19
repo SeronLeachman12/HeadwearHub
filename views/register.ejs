@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+
+    <body>
+        <%- include('partials/header') %>
+
+            <main class="container">
+                <div class="auth-container animate-fade-in text-center" style="max-width: 500px;">
+                    <h2 style="margin-bottom: 0.5rem; font-size: 2rem;">Create Account</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Join the Headwear Hub community</p>
+
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" placeholder="name@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="psw">Password</label>
+                            <div style="position: relative;">
+                                <input type="password" id="psw" placeholder="••••••••" required>
+                                <span id="togglePsw"
+                                    style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; opacity: 0.6;">👁️</span>
+                            </div>
+                        </div>
+
+                        <div id="strengthBar"
+                            style="height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); margin: -10px 0 5px;">
+                            <div id="strengthProgress"
+                                style="width: 0%; height: 100%; border-radius: 2px; transition: var(--transition);">
+                            </div>
+                        </div>
+                        <div id="strengthText"
+                            style="font-size: 0.75rem; text-align: right; margin-bottom: 1.5rem; color: var(--text-muted);">
+                            Too short</div>
+
+                        <div class="form-group">
+                            <label for="psw-repeat">Confirm Password</label>
+                            <input type="password" id="psw-repeat" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="form-group"
+                            style="display: flex; align-items: center; gap: 0.5rem; text-align: left;">
+                            <input type="checkbox" id="terms" style="width: auto;" required>
+                            <label for="terms" style="margin-bottom: 0; cursor: pointer; font-size: 0.85rem;">I agree to
+                                the <a href="#" style="color: var(--primary-color);">Terms & Privacy Policy</a></label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Create
+                            Account</button>
+
+                        <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--text-muted);">
+                            Already have an account? <a href="/login"
+                                style="color: var(--primary-color); font-weight: 600;">Sign In</a>
+                        </p>
+                    </form>
+                </div>
+            </main>
+
+            <%- include('partials/footer') %>
+
+                <script>
+                    const togglePsw = document.getElementById('togglePsw');
+                    const pswInput = document.getElementById('psw');
+                    const strengthProgress = document.getElementById('strengthProgress');
+                    const strengthText = document.getElementById('strengthText');
+
+                    togglePsw.addEventListener('click', () => {
+                        const type = pswInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                        pswInput.setAttribute('type', type);
+                        togglePsw.textContent = type === 'password' ? '👁️' : '🙈';
+                    });
+
+                    pswInput.addEventListener('input', () => {
+                        const val = pswInput.value;
+                        let strength = 0;
+                        if (val.length >= 8) strength++;
+                        if (/[A-Z]/.test(val)) strength++;
+                        if (/[0-9]/.test(val)) strength++;
+                        if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+                        const colors = ['#f44336', '#ff9800', '#ffeb3b', '#4caf50'];
+                        const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+                        if (val.length === 0) {
+                            strengthProgress.style.width = '0%';
+                            strengthText.textContent = 'Too short';
+                        } else {
+                            strengthProgress.style.width = ((strength + 1) / 4 * 100) + '%';
+                            strengthProgress.style.background = colors[strength] || colors[3];
+                            strengthText.textContent = labels[strength] || labels[3];
+                        }
+                    });
+
+                    const form = document.getElementById("registerForm");
+                    form.addEventListener("submit", function (e) {
+                        e.preventDefault();
+                        const email = document.getElementById("email").value;
+                        const psw = document.getElementById("psw").value;
+                        const pswRepeat = document.getElementById("psw-repeat").value;
+
+                        if (psw !== pswRepeat) {
+                            alert("Passwords do not match.");
+                            return;
+                        }
+
+                        const userData = { email, password: psw };
+                        localStorage.setItem("user", JSON.stringify(userData));
+                        alert("Registration Successful!");
+                        window.location.href = "/login";
+                    });
+                </script>
+    </body>
+
+</html>

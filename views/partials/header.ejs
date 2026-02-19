@@ -1,0 +1,38 @@
+<header>
+    <a href="/" class="logo">HEADWEAR HUB</a>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/shop">Shop</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/cart">Cart</a></li>
+        </ul>
+    </nav>
+    <div class="auth-links">
+        <span id="userDisplay" style="margin-right: 15px; font-weight: 500;"></span>
+        <a href="/login" id="loginLink" class="btn btn-outline">Login</a>
+        <button id="logoutBtn" class="btn btn-danger" style="display: none;">Logout</button>
+    </div>
+</header>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const loggedIn = localStorage.getItem("loggedIn") === "true";
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        const userDisplay = document.getElementById("userDisplay");
+        const loginLink = document.getElementById("loginLink");
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        if (loggedIn && user) {
+            userDisplay.textContent = `Hi, ${user.email.split('@')[0]}`;
+            loginLink.style.display = 'none';
+            logoutBtn.style.display = 'inline-flex';
+        }
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem("loggedIn");
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+        });
+    });
+</script>

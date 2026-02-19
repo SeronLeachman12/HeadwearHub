@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+
+    <body>
+        <%- include('partials/header') %>
+
+            <main class="container">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; padding-top: 2rem;">
+                    <div>
+                        <h1 style="font-size: 3rem;">The Collection</h1>
+                        <p style="color: var(--text-muted);">Curated headwear for every occasion.</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <select id="filterCat" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                            <option value="all">All Items</option>
+                            <option value="caps">Caps</option>
+                            <option value="beanies">Beanies</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="productsContainer"
+                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem;">
+                    <!-- Products will be loaded here -->
+                </div>
+            </main>
+
+            <%- include('partials/footer') %>
+
+                <script>
+                    const products = [
+                        { id: 1, name: "Orange Beanie", price: 4.60, img: "https://images.unsplash.com/photo-1576872381149-7847515ce5d8?w=400&h=400&fit=crop", cat: "beanies" },
+                        { id: 2, name: "Street Cap", price: 6.00, img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&h=400&fit=crop", cat: "caps" },
+                        { id: 3, name: "Sun Hat", price: 20.00, img: "https://images.unsplash.com/photo-1521335629791-ce4aec67dd15?w=400&h=400&fit=crop", cat: "caps" },
+                        { id: 4, name: "Snapback", price: 6.00, img: "https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=400&h=400&fit=crop", cat: "caps" }
+                    ];
+
+                    const container = document.getElementById("productsContainer");
+
+                    function loadProducts(filter = 'all') {
+                        container.innerHTML = "";
+                        const filtered = filter === 'all' ? products : products.filter(p => p.cat === filter);
+
+                        filtered.forEach((p) => {
+                            const div = document.createElement("div");
+                            div.className = "card animate-fade-in";
+                            div.innerHTML = `
+                    <div style="position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 1rem;">
+                        <img src="${p.img}" alt="${p.name}" style="width: 100%; height: 260px; object-fit: cover; transition: transform 0.5s ease;">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div>
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.2rem;">${p.name}</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">${p.cat.toUpperCase()}</p>
+                        </div>
+                        <span style="font-weight: 700; color: var(--primary-color);">$${p.price.toFixed(2)}</span>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')})">Add to Cart</button>
+                `;
+                            container.appendChild(div);
+                        });
+                    }
+
+                    function addToCart(product) {
+                        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+                        cart.push(product);
+                        localStorage.setItem("cart", JSON.stringify(cart));
+                        alert(`${product.name} added to cart!`);
+                        // Minimal UI update if header has cart count
+                        window.location.reload();
+                    }
+
+                    document.getElementById('filterCat').addEventListener('change', (e) => {
+                        loadProducts(e.target.value);
+                    });
+
+                    loadProducts();
+                </script>
+    </body>
+
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+
+    <body style="background: white; color: black;">
+        <main class="container" style="max-width: 800px; padding: 4rem 2rem;">
+            <div id="invoiceContent" class="animate-fade-in"
+                style="background: white; padding: 4rem; border: 1px solid #eee; border-radius: 4px; box-shadow: 0 0 40px rgba(0,0,0,0.05);">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4rem;">
+                    <div>
+                        <h1 style="font-size: 2rem; letter-spacing: -0.5px; margin-bottom: 0.5rem; color: #ff8c00;">
+                            HEADWEAR HUB</h1>
+                        <p style="color: #666; font-size: 0.9rem;">Premium Headwear Selection</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h2 style="font-size: 1.5rem; color: #333; margin-bottom: 0.5rem;">INVOICE</h2>
+                        <p id="invoiceDate" style="color: #666; font-size: 0.9rem;">Date: --</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <p
+                            style="font-weight: 700; font-size: 0.8rem; text-transform: uppercase; color: #999; margin-bottom: 1rem;">
+                            Customer Details</p>
+                        <p id="customerName" style="font-weight: 600; font-size: 1.1rem;">--</p>
+                        <p id="customerEmail" style="color: #666;">--</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p
+                            style="font-weight: 700; font-size: 0.8rem; text-transform: uppercase; color: #999; margin-bottom: 1rem;">
+                            Order Status</p>
+                        <p style="font-weight: 600; color: #4caf50;">PAID SUCCESSFULLY</p>
+                    </div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #000;">
+                            <th style="text-align: left; padding: 1rem 0; font-weight: 700;">ITEM</th>
+                            <th style="text-align: center; padding: 1rem 0; font-weight: 700;">QTY</th>
+                            <th style="text-align: right; padding: 1rem 0; font-weight: 700;">PRICE</th>
+                            <th style="text-align: right; padding: 1rem 0; font-weight: 700;">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsList">
+                        <!-- Items injected here -->
+                    </tbody>
+                </table>
+
+                <div style="display: flex; justify-content: flex-end;">
+                    <div style="width: 300px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <span style="color: #666;">Subtotal</span>
+                            <span id="subtotal" style="font-weight: 600;">$0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <span style="color: #666;">Tax (10%)</span>
+                            <span id="tax" style="font-weight: 600;">$0.00</span>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 1.5rem; margin-top: 1rem;">
+                            <span style="font-weight: 700; font-size: 1.25rem;">Grand Total</span>
+                            <span id="total" style="font-weight: 700; font-size: 1.25rem; color: #ff8c00;">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 5rem; border-top: 1px solid #eee; padding-top: 2rem; text-align: center; color: #999; font-size: 0.8rem;">
+                    <p>Thank you for choosing Headwear Hub. Your order will be shipped within 2-3 business days.</p>
+                    <p style="margin-top: 0.5rem;">For support, contact support@headwearhub.com</p>
+                </div>
+            </div>
+
+            <div class="no-print"
+                style="margin-top: 3rem; text-align: center; display: flex; gap: 1rem; justify-content: center;">
+                <button onclick="window.print()" class="btn btn-primary">Print Invoice</button>
+                <a href="/" class="btn btn-outline"
+                    style="color: black !important; border-color: black !important;">Back to Home</a>
+            </div>
+        </main>
+
+        <style>
+            @media print {
+                body {
+                    background: white !important;
+                }
+
+                .no-print {
+                    display: none !important;
+                }
+
+                .container {
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    width: 100% !important;
+                    max-width: none !important;
+                }
+
+                #invoiceContent {
+                    border: none !important;
+                    box-shadow: none !important;
+                    padding: 0 !important;
+                }
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const user = JSON.parse(localStorage.getItem('user')) || { email: 'Guest User' };
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+                if (cart.length === 0) {
+                    alert("No items found in cart!");
+                    window.location.href = "/shop";
+                    return;
+                }
+
+                document.getElementById('invoiceDate').textContent = `Date: ${new Date().toLocaleDateString()}`;
+                document.getElementById('customerName').textContent = user.email.split('@')[0].toUpperCase();
+                document.getElementById('customerEmail').textContent = user.email;
+
+                let subtotal = 0;
+                const itemsList = document.getElementById('itemsList');
+
+                cart.forEach(item => {
+                    const price = item.price || 0;
+                    const qty = item.quantity || 1;
+                    const itemTotal = price * qty;
+                    subtotal += itemTotal;
+
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = "1px solid #eee";
+                    tr.innerHTML = `
+                    <td style="padding: 1.5rem 0;">
+                        <span style="font-weight: 600; display: block;">${item.name}</span>
+                        <span style="font-size: 0.75rem; color: #999;">Premium Quality</span>
+                    </td>
+                    <td style="text-align: center; padding: 1.5rem 0;">${qty}</td>
+                    <td style="text-align: right; padding: 1.5rem 0;">$${price.toFixed(2)}</td>
+                    <td style="text-align: right; padding: 1.5rem 0; font-weight: 600;">$${itemTotal.toFixed(2)}</td>
+                `;
+                    itemsList.appendChild(tr);
+                });
+
+                const tax = subtotal * 0.1;
+                const total = subtotal + tax;
+
+                document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+                document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+
+                // Clear cart after showing invoice (simulating order completion)
+                localStorage.removeItem('cart');
+            });
+        </script>
+    </body>
+
+</html>

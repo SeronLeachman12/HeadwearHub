@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+
+    <body>
+        <%- include('partials/header') %>
+
+            <main>
+                <section class="hero animate-fade-in" style="padding: 8rem 2rem;">
+                    <div class="container">
+                        <h1 style="font-size: 4.5rem;">More Than Just <span
+                                style="color: var(--primary-color)">Hats</span></h1>
+                        <p style="max-width: 800px; margin: 0 auto;">Headwear Hub is your destination for bold
+                            expression and creative design. We curate the finest collection to ensure your style is
+                            always elevated.</p>
+                    </div>
+                </section>
+
+                <section class="container" style="padding: 4rem 2rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+                        <div class="card"
+                            style="padding: 3rem; background: var(--accent-gradient); color: white; border: none;">
+                            <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem;">Our Mission</h2>
+                            <p style="font-size: 1.2rem; opacity: 0.9;">To deliver high-quality, stylish headwear that
+                                fits every mood, moment, and personality. From sleek caps to cozy beanies, we believe
+                                your headwear should be as unique as you are.</p>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem;">Story of Street Culture</h2>
+                            <p style="color: var(--text-muted); margin-bottom: 2rem;">Born from a love of street culture
+                                and bold expression, Headwear Hub started as a small project and grew into a community
+                                of style enthusiasts. We believe that a great hat is the finishing touch to any outfit,
+                                a statement of who you are.</p>
+                            <a href="/shop" class="btn btn-primary">See Our Collection</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="container" style="padding: 6rem 2rem; text-align: center;">
+                    <h2 style="font-size: 3rem; margin-bottom: 4rem;">The Visionaries</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 3rem;">
+                        <div class="card text-center">
+                            <div
+                                style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.5rem; border: 4px solid var(--primary-color);">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop"
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <h3>Seron Leachman</h3>
+                            <p style="color: var(--primary-color); font-weight: 600; margin-bottom: 1rem;">Founder &
+                                Creative Director</p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">The heart and soul behind Headwear
+                                Hub's unique aesthetic.</p>
+                        </div>
+                        <div class="card text-center">
+                            <div
+                                style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.5rem; border: 4px solid var(--primary-color);">
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop"
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <h3>Seron Leachman</h3>
+                            <p style="color: var(--primary-color); font-weight: 600; margin-bottom: 1rem;">Lead Designer
+                            </p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Turning bold visions into wearable
+                                reality.</p>
+                        </div>
+                        <div class="card text-center">
+                            <div
+                                style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.5rem; border: 4px solid var(--primary-color);">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop"
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <h3>Seron Leachman</h3>
+                            <p style="color: var(--primary-color); font-weight: 600; margin-bottom: 1rem;">Marketing &
+                                Brand</p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Connecting our community with the
+                                styles they love.</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <%- include('partials/footer') %>
+    </body>
+
+</html>
