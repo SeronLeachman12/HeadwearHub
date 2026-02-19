@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+
+    <body>
+        <%- include('partials/header') %>
+
+            <main class="container">
+                <h1 style="font-size: 2.5rem; margin-bottom: 2rem;">Shopping Cart</h1>
+
+                <div style="display: grid; grid-template-columns: 1fr 350px; gap: 3rem;">
+                    <!-- Cart Items -->
+                    <div>
+                        <div id="cartContainer">
+                            <!-- Items injected by JS -->
+                        </div>
+
+                        <div style="margin-top: 4rem;">
+                            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text-muted);">Saved for
+                                later</h2>
+                            <div id="savedContainer">
+                                <!-- Saved items injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Sidebar -->
+                    <div>
+                        <div class="card" style="position: sticky; top: 100px;">
+                            <h2 style="margin-bottom: 1.5rem;">Order Summary</h2>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span style="color: var(--text-muted);">Subtotal</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span style="color: var(--text-muted);">Tax (10%)</span>
+                                <span id="tax">$0.00</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span style="color: var(--text-muted);">Shipping</span>
+                                <span style="color: #4caf50;">FREE</span>
+                            </div>
+                            <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 1.5rem 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+                                <span style="font-weight: 700; font-size: 1.2rem;">Total</span>
+                                <span id="total"
+                                    style="font-weight: 700; font-size: 1.2rem; color: var(--primary-color);">$0.00</span>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%; padding: 1rem;"
+                                onclick="checkout()">Proceed to Checkout</button>
+                            <a href="/shop" class="btn btn-outline" style="width: 100%; margin-top: 1rem;">Continue
+                                Shopping</a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <%- include('partials/footer') %>
+
+                <script>
+                    const cartContainer = document.getElementById("cartContainer");
+                    const savedContainer = document.getElementById("savedContainer");
+                    const subtotalEl = document.getElementById("subtotal");
+                    const taxEl = document.getElementById("tax");
+                    const totalEl = document.getElementById("total");
+
+                    function loadCart() {
+                        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+                        const saved = JSON.parse(localStorage.getItem("saved")) || [];
+
+                        cartContainer.innerHTML = "";
+                        savedContainer.innerHTML = "";
+
+                        if (cart.length === 0) {
+                            cartContainer.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+                        <span style="font-size: 4rem; display: block; margin-bottom: 1.5rem;">🛒</span>
+                        <h3>Your cart is empty</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">Looks like you haven't added anything to your cart yet.</p>
+                        <a href="/shop" class="btn btn-primary">Start Shopping</a>
+                    </div>
+                `;
+                            updateSummary(0);
+                        } else {
+                            let subtotal = 0;
+                            cart.forEach((item, index) => {
+                                const price = item.price || 0;
+                                const qty = item.quantity || 1;
+                                subtotal += price * qty;
+
+                                const div = document.createElement("div");
+                                div.className = "card animate-fade-in";
+                                div.style.marginBottom = "1rem";
+                                div.style.display = "flex";
+                                div.style.gap = "1.5rem";
+                                div.style.alignItems = "center";
+                                div.innerHTML = `
+                        <img src="${item.img}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                        <div style="flex-grow: 1;">
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.2rem;">${item.name}</h3>
+                            <p style="color: var(--primary-color); font-weight: 600;">$${price.toFixed(2)}</p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem; background: var(--bg-color); padding: 0.5rem; border-radius: 8px;">
+                            <button class="btn-icon" onclick="updateQty(${index}, -1)" style="background: transparent; border: none; color: white; cursor: pointer; font-size: 1.2rem;">−</button>
+                            <span style="font-weight: 600; min-width: 20px; text-align: center;">${qty}</span>
+                            <button class="btn-icon" onclick="updateQty(${index}, 1)" style="background: transparent; border: none; color: white; cursor: pointer; font-size: 1.2rem;">+</button>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="saveForLater(${index})">Save</button>
+                            <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem; color: #f44336; border-color: #f44336;" onclick="remove(${index})">Remove</button>
+                        </div>
+                    `;
+                                cartContainer.appendChild(div);
+                            });
+                            updateSummary(subtotal);
+                        }
+
+                        // Saved Items
+                        if (saved.length > 0) {
+                            saved.forEach((item, index) => {
+                                const div = document.createElement("div");
+                                div.className = "card";
+                                div.style.marginBottom = "1rem";
+                                div.style.display = "flex";
+                                div.style.gap = "1.5rem";
+                                div.style.alignItems = "center";
+                                div.style.opacity = "0.7";
+                                div.innerHTML = `
+                        <img src="${item.img}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; filter: grayscale(1);">
+                        <div style="flex-grow: 1;">
+                            <h3 style="font-size: 1rem;">${item.name}</h3>
+                            <p style="color: var(--text-muted);">$${item.price.toFixed(2)}</p>
+                        </div>
+                        <button class="btn btn-outline" onclick="moveToCart(${index})">Move to Cart</button>
+                        <button class="btn-icon" onclick="removeSaved(${index})" style="color: #f44336; background: transparent; border: none; cursor: pointer;">✕</button>
+                    `;
+                                savedContainer.appendChild(div);
+                            });
+                        } else {
+                            savedContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">No items saved for later.</p>';
+                        }
+                    }
+
+                    function updateSummary(subtotal) {
+                        const tax = subtotal * 0.1;
+                        const total = subtotal + tax;
+                        subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+                        taxEl.textContent = `$${tax.toFixed(2)}`;
+                        totalEl.textContent = `$${total.toFixed(2)}`;
+                    }
+
+                    window.updateQty = (index, delta) => {
+                        const cart = JSON.parse(localStorage.getItem("cart"));
+                        cart[index].quantity = (cart[index].quantity || 1) + delta;
+                        if (cart[index].quantity <= 0) cart.splice(index, 1);
+                        localStorage.setItem("cart", JSON.stringify(cart));
+                        loadCart();
+                    };
+
+                    window.remove = (index) => {
+                        const cart = JSON.parse(localStorage.getItem("cart"));
+                        cart.splice(index, 1);
+                        localStorage.setItem("cart", JSON.stringify(cart));
+                        loadCart();
+                    };
+
+                    window.saveForLater = (index) => {
+                        const cart = JSON.parse(localStorage.getItem("cart"));
+                        const saved = JSON.parse(localStorage.getItem("saved")) || [];
+                        saved.push(cart[index]);
+                        cart.splice(index, 1);
+                        localStorage.setItem("cart", JSON.stringify(cart));
+                        localStorage.setItem("saved", JSON.stringify(saved));
+                        loadCart();
+                    };
+
+                    window.moveToCart = (index) => {
+                        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+                        const saved = JSON.parse(localStorage.getItem("saved"));
+                        cart.push(saved[index]);
+                        saved.splice(index, 1);
+                        localStorage.setItem("cart", JSON.stringify(cart));
+                        localStorage.setItem("saved", JSON.stringify(saved));
+                        loadCart();
+                    };
+
+                    window.removeSaved = (index) => {
+                        const saved = JSON.parse(localStorage.getItem("saved"));
+                        saved.splice(index, 1);
+                        localStorage.setItem("saved", JSON.stringify(saved));
+                        loadCart();
+                    };
+
+                    window.checkout = () => {
+                        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+                        if (cart.length === 0) {
+                            alert("Your cart is empty!");
+                            return;
+                        }
+                        window.location.href = "/invoice";
+                    };
+
+                    loadCart();
+                </script>
+    </body>
+
+</html>
