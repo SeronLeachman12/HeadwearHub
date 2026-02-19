@@ -1,0 +1,270 @@
+<!--Name:Seron Leachman-->
+      <!--ID#:2307183--> 
+      <!--Email:seronleachman059@gmail.com--> 
+      <!--Module Code:CIT2001 -->
+      <!--Assignment Name: Assignment 2 -->
+      <!--Day/Time: Monday/11 to 12:50-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(244, 237, 237);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 16px;
+  background-color: white;
+}
+
+input[type=text], input[type=password] {
+  width: 50%;
+  padding: 15px;
+  margin: 5px 0 10px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 50%;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 18px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+.registerbtn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 20%;
+  opacity: 0.9;
+}
+
+.registerbtn:hover {
+  opacity: 1;
+}
+
+a {
+  color: dodgerblue;
+}
+
+.signin {
+  background-color: #f1f1f1;
+  text-align: center;
+}
+
+.conwithbtn {
+  background-color: #e4e4e4c5;
+  color: rgb(24, 23, 23);
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 20%;
+  opacity: 0.9;
+}
+
+.conwithbtn:hover {
+  opacity: 1;
+}
+
+footer {
+  background-color: #222;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  margin-top: 60px;
+}
+
+/* Password strength bar */
+#strengthBar {
+  height: 8px;
+  width: 50%;
+  background: #ccc;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+#strengthText {
+  font-size: 14px;
+  margin-top: 5px;
+}
+</style>
+</head>
+<body>
+
+<form id="registerForm">
+  <div class="container">
+    <h1>Headwear Hub</h1>
+
+    <center><h3>Register</h3></center>
+    <center>
+    <p>Please fill in this form to create an account.</p>
+    <hr>
+
+    <label><b>Email</b></label>
+    <input type="text" placeholder="Enter Email" id="email" required><br>
+
+    
+    <div class="password-wrapper">
+        <label><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" id="psw" required>
+      <span class="eye-icon" onclick="togglePassword('psw', this)">👁️</span>
+    </div>
+
+    <!-- Strength bar + text -->
+    <div id="strengthBar"></div>
+    <div id="strengthText"></div>
+
+  
+    <div class="password-wrapper">
+          <label><b>Repeat Password</b></label>
+      <input type="password" placeholder="Repeat Password" id="psw-repeat" required>
+      <span class="eye-icon" onclick="togglePassword('psw-repeat', this)">👁️</span>
+    </div>
+
+    <hr>
+
+    <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
+
+    <button type="submit" class="registerbtn">Register</button>
+    </center>
+  </div>
+  <hr>
+
+  <div class="container signin">
+    <p>Already have an account? <a href="./login.html">Sign in</a>.</p>
+  </div>
+</form>
+
+<footer>
+    <p>© 2025 Headwear Hub — All Rights Reserved</p>
+</footer>
+
+
+
+
+<script>
+
+//Show/Hide Password Function
+
+function togglePassword(id, icon) {
+  const input = document.getElementById(id);
+  if (input.type === "password") {
+    input.type = "text";
+    icon.textContent = "🙈";
+  } else {
+    input.type = "password";
+    icon.textContent = "👁️";
+  }
+}
+
+/* 
+ Password Strength Checker
+*/
+const psw = document.getElementById("psw");
+const strengthBar = document.getElementById("strengthBar");
+const strengthText = document.getElementById("strengthText");
+
+psw.addEventListener("input", function () {
+  let value = psw.value;
+  let strength = 0;
+
+  if (value.length >= 6) strength++;
+  if (/[A-Z]/.test(value)) strength++;
+  if (/[a-z]/.test(value)) strength++;
+  if (/[0-9]/.test(value)) strength++;
+  if (/[^A-Za-z0-9]/.test(value)) strength++;
+
+  // Change bar color & label
+  if (strength <= 1) {
+    strengthBar.style.background = "red";
+    strengthText.textContent = "Weak";
+  } else if (strength == 2) {
+    strengthBar.style.background = "orange";
+    strengthText.textContent = "Fair";
+  } else if (strength == 3) {
+    strengthBar.style.background = "gold";
+    strengthText.textContent = "Good";
+  } else if (strength == 4) {
+    strengthBar.style.background = "lightgreen";
+    strengthText.textContent = "Strong";
+  } else {
+    strengthBar.style.background = "green";
+    strengthText.textContent = "Very Strong";
+  }
+});
+
+
+//Form Validation + Save
+
+const form = document.getElementById("registerForm");
+const email = document.getElementById("email");
+const pswRepeat = document.getElementById("psw-repeat");
+
+form.addEventListener("submit", function (e) {
+  let errors = [];
+
+  // Email validation
+  if (!email.value.includes("@") || !email.value.includes(".")) {
+    errors.push("Please enter a valid email.");
+  }
+
+  // Password must match
+  if (psw.value !== pswRepeat.value) {
+    errors.push("Passwords do not match.");
+  }
+
+  if (errors.length > 0) {
+    e.preventDefault();
+    alert(errors.join("\n"));
+  } else {
+    
+    // Save to  Local Storage
+    
+    const userData = {
+      email: email.value,
+      password: psw.value
+    };
+
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    
+    // Redirect to Login Page
+    
+    e.preventDefault();
+    alert("Registration Successful!");
+    window.location.href = "login.html";
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!--Name:Seron Leachman-->
+      <!--ID#:2307183--> 
+      <!--Email:seronleachman059@gmail.com--> 
+      <!--Module Code:CIT2001 -->
+      <!--Assignment Name: Assignment 2 -->
+      <!--Day/Time: Monday/11 to 12:50-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Headwear Hub - Cart</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body { 
+      font-family: Arial, Helvetica, sans-serif; 
+      background:#f4f4f4; 
+      margin:0; 
+    }
+
+    header {
+       background:#ff8c00; 
+       color:white; 
+       padding:20px; 
+       display:flex; 
+       justify-content:space-between;
+       align-items:center; 
+    }
+
+    nav button {
+       margin-left:10px;
+       padding:8px 12px; 
+       cursor:pointer; 
+       background:#171717; 
+       color:white; 
+       border:none; 
+       border-radius:4px; 
+    }
+
+    nav button:hover { opacity:0.9; }
+
+    #cartContainer { padding:20px; }
+    
+    .item { 
+      background:white; 
+      padding:10px; 
+      margin-bottom:10px; 
+      display:flex; 
+      align-items:center; 
+      border-radius:8px; 
+    }
+    .item img { 
+      width:80px; 
+      height:80px; 
+      margin-right:15px; 
+      border-radius:8px; 
+    }
+    .item-details { flex-grow:1; }
+
+    .item button {
+       padding:5px 10px; 
+       margin-left:5px; 
+       cursor:pointer; 
+    }
+
+    .section-title { padding-left:20px;
+       font-size:22px; margin-top:25px; }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Cart</h1>
+  <nav>
+    <button onclick="goShop()">Continue Shopping</button>
+    <button onclick="logout()">Logout</button>
+  </nav>
+</header>
+
+<!--Main Cart-->
+<h2>Your Cart</h2>
+<div id="cartContainer"></div>
+<h4 id="subtotal"></h4>
+<h4 id="tax"></h4>
+<h4 id="totalPrice"></h4>
+
+<!-- New Checkout Button -->
+<button id="checkoutBtn" onclick="checkout()" 
+        style="margin:20px; padding:12px 20px; background:#28a745; color:white; 
+               border:none; border-radius:6px; cursor:pointer; font-size:16px;">
+  Proceed to Checkout
+</button>
+
+<!-- Saved For Later -->
+<h2 class="section-title">Saved for Later</h2>
+<div id="savedContainer"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  
+  // Login Check
+  
+  const loggedIn = localStorage.getItem("loggedIn") === "true" || sessionStorage.getItem("loggedIn") === "true";
+  if (!loggedIn) window.location.href = "login.html";
+
+  // Cart Elements
+  const cartContainer = document.getElementById("cartContainer");
+  const savedContainer = document.getElementById("savedContainer");
+  const subtotalEl = document.getElementById("subtotal");
+  const taxEl = document.getElementById("tax");
+  const totalEl = document.getElementById("totalPrice");
+
+  
+  // Logout Function
+  
+  window.logout = function () {
+    localStorage.removeItem("loggedIn");
+    sessionStorage.removeItem("loggedIn");
+    alert("Logged out!");
+    window.location.href = "login.html";
+  };
+
+  
+  // Navigation
+  
+  window.goShop = function () {
+    window.location.href = "shop.html";
+  };
+
+  
+  // Proceed to Checkout
+  
+  window.checkout = function () {
+    window.location.href = "checkout.html";
+  };
+
+  
+  // Load Both cart + saved iteam
+  
+  function loadCart() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const saved = JSON.parse(localStorage.getItem("saved")) || [];
+
+    cartContainer.innerHTML = "";
+    savedContainer.innerHTML = "";
+
+    
+    // Cart Section 
+    
+    if (cart.length === 0) {
+      cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+      subtotalEl.textContent = "";
+      taxEl.textContent = "";
+      totalEl.textContent = "";
+    } else {
+      let subtotal = 0;
+
+      cart.forEach((item, index) => {
+        subtotal += item.price * item.quantity;
+
+        const div = document.createElement("div");
+        div.className = "item";
+
+        div.innerHTML = `
+          <img src="${item.img}" alt="${item.name}">
+          <div class="item-details">
+            <strong>${item.name}</strong><br>
+            $${item.price} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}
+          </div>
+
+          <!-- quantity buttons -->
+          <button onclick="changeQuantity(${index}, 1)">+</button>
+          <button onclick="changeQuantity(${index}, -1)">-</button>
+
+          <!-- remove -->
+          <button onclick="removeItem(${index})">Remove</button>
+
+          <!-- SAVE FOR LATER -->
+          <button onclick="saveForLater(${index})">Save for Later</button>
+        `;
+
+        cartContainer.appendChild(div);
+      });
+
+      // Tax + Total 
+      const tax = subtotal * 0.10;
+      const total = subtotal + tax;
+
+      subtotalEl.textContent = "Subtotal: $" + subtotal.toFixed(2);
+      taxEl.textContent = "Tax (10%): $" + tax.toFixed(2);
+      totalEl.textContent = "Total: $" + total.toFixed(2);
+    }
+
+    
+    // saved For Later Section
+    
+    if (saved.length === 0) {
+      savedContainer.innerHTML = "<p>No saved items.</p>";
+    } else {
+      saved.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "item";
+
+        div.innerHTML = `
+          <img src="${item.img}" alt="${item.name}">
+          <div class="item-details">
+            <strong>${item.name}</strong><br>
+            Price: $${item.price}
+          </div>
+
+          <!-- Move back to cart -->
+          <button onclick="moveToCart(${index})">Move to Cart</button>
+
+          <!-- remove saved -->
+          <button onclick="removeSaved(${index})">Remove</button>
+        `;
+
+        savedContainer.appendChild(div);
+      });
+    }
+  }
+
+  
+  // Change Quantity 
+  
+  window.changeQuantity = function (index, delta) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart[index].quantity += delta;
+
+    if (cart[index].quantity <= 0) {
+      cart.splice(index, 1);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    loadCart();
+  };
+
+  
+  // Remove From Cart
+  
+  window.removeItem = function (index) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart.splice(index, 1);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    loadCart();
+  };
+
+  
+  // Save For Later
+  
+  window.saveForLater = function (index) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const saved = JSON.parse(localStorage.getItem("saved")) || [];
+
+    // Move item from cart -> saved
+    saved.push(cart[index]);
+    cart.splice(index, 1);
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("saved", JSON.stringify(saved));
+
+    loadCart();
+  };
+
+  
+  // Move Back To Cart
+  
+  window.moveToCart = function (index) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const saved = JSON.parse(localStorage.getItem("saved")) || [];
+
+    cart.push(saved[index]);
+    saved.splice(index, 1);
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("saved", JSON.stringify(saved));
+
+    loadCart();
+  };
+
+  
+  // Remove Saved Item 
+  
+  window.removeSaved = function (index) {
+    const saved = JSON.parse(localStorage.getItem("saved")) || [];
+    saved.splice(index, 1);
+    localStorage.setItem("saved", JSON.stringify(saved));
+    loadCart();
+  };
+
+  // Initial Load
+  loadCart();
+
+});
+</script>
+
+
+</body>
+</html>

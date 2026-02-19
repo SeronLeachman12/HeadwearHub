@@ -1,0 +1,110 @@
+<!--Name:Seron Leachman-->
+      <!--ID#:2307183--> 
+      <!--Email:seronleachman059@gmail.com--> 
+      <!--Module Code:CIT2001 -->
+      <!--Assignment Name: Assignment 2 -->
+      <!--Day/Time: Monday/11 to 12:50-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Headwear Hub - Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif; text-align: center; background-color: #f4f4f4;
+    }
+    header {
+      background-color: #ff8c00; 
+      color: #fff; 
+      padding: 20px;
+    }
+
+    
+    button {
+      padding: 10px 20px; 
+      margin: 10px; 
+      cursor: pointer;
+      background:#171717; 
+      color:white; 
+      border:none; 
+      border-radius:4px;
+    }
+
+     button:hover {opacity:0.9;}
+
+    a {
+      text-decoration: none;
+      color: white;
+    }
+    .logout-btn {
+      background-color: #f44336; 
+      border: none; 
+      color: white; 
+      font-size: 16px;
+    }
+    .shop-btn
+     {
+      background-color: #04AA6D; border: 
+      none; color: white; 
+      font-size: 16px;}
+
+      .imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+}
+
+img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+      
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Welcome To Headwear Hub</h1>
+</header>
+
+<h2 id="welcomeMessage"></h2>
+
+<button class="shop-btn" onclick="goShop()">Go to Shop</button>
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+<img src="./images/Logo.png" alt="Avatar" class="avatar">
+
+
+<script>
+  
+  // Check if user is logged in
+ 
+  const loggedIn = localStorage.getItem("loggedIn") === "true" || sessionStorage.getItem("loggedIn") === "true";
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!loggedIn || !user) {
+    // Not logged in → redirect to login
+    window.location.href = "login.html";
+  } else {
+    document.getElementById("welcomeMessage").textContent = `Welcome, ${user.email}!`;
+  }
+
+  
+  // Logout Function
+  
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    sessionStorage.removeItem("loggedIn");
+    alert("You have been logged out.");
+    window.location.href = "login.html";
+  }
+
+  
+  // Go to shop
+ 
+  function goShop() {
+    window.location.href = "shop.html";
+  }
+</script>
+
+</body>
+</html>
